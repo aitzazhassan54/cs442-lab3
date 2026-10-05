@@ -103,6 +103,28 @@ class OrderLine {
 OrderLine mainOrder() {
   return OrderLine(MenuItem(menu[u], priceOf(u)), 2 + (t + u) % 5);
 }
+//  besides silently clamping, a setter could throw an exception
+// (e.g. ArgumentError) so the caller knows the value was invalid, or log
+// a warning, or ignore the bad value and keep the old balance.
+
+class StudentCard {
+  final String owner;
+  int _balance;
+
+  StudentCard(this.owner) : _balance = 0;
+
+  int get balance => _balance;
+
+  set balance(int v) {
+    if (v < 0) {
+      _balance = 0;
+    } else if (v > balanceCap) {
+      _balance = balanceCap;
+    } else {
+      _balance = v;
+    }
+  }
+}
 
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
@@ -201,6 +223,19 @@ void step6() {
 
 void step7() {
   print('--- Step 7 ---');
+  var card = StudentCard('S$seed');
+
+  card.balance = seed * 10 + 50;
+  print('Step 7: topped up -> ${card.balance}');
+
+  card.balance = -seed - 1;
+  print('Step 7: bad value -> ${card.balance}');
+
+  card.balance = balanceCap - u;
+  print('Step 7: reset -> ${card.balance}');
+
+  card.balance = card.balance - mainOrder().grand; // pay the main order
+  print('Step 7: paid order -> ${card.balance}');
 }
 
 void step8() {
