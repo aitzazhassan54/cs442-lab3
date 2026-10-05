@@ -320,3 +320,14 @@ void step10() {
     'Step 10: receipt $receipt, discount $discount, payable ${receipt - discount}',
   );
 }
+// Q1: The shorthand saves writing each field name three times and the
+//     assignments in the body; it is less code and less chance of typos.
+// Q2: Use a named constructor for another way to build a new object
+//     (free, fromString). Use a factory when you may return an existing
+//     or cached instance, or a subtype, instead of always a new one.
+// Q3: A constructor body runs after the fields exist, so it can reassign
+//     them. An initializer list runs before the body and is the only place
+//     to set final fields, but it cannot read other fields of the object.
+// Q4: A getter computes a value on demand so it never goes stale (grand).
+//     A setter lets you validate or clamp a value on assignment, which a
+//     public field cannot do.
