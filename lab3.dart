@@ -58,6 +58,24 @@ class MenuItem {
       price = int.parse(text.split(':')[1]);
 }
 
+// Think: the underscore makes _instance and _internal private to this file.
+// If they were public, other code could call OrderLog._internal() to create
+// extra logs, or overwrite _instance, which would break the one-shared-log rule.
+
+class OrderLog {
+  static OrderLog? _instance;
+  final List<String> entries = [];
+
+  OrderLog._internal(); // private named constructor
+
+  factory OrderLog() {
+    _instance ??= OrderLog._internal();
+    return _instance!;
+  }
+
+  void add(String msg) => entries.add(msg);
+}
+
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -111,6 +129,21 @@ void step3() {
 
 void step4() {
   print('--- Step 4 ---');
+  var log1 = OrderLog();
+  var log2 = OrderLog();
+
+  for (var i = 1; i <= u + 2; i++) {
+    var msg = 'order #${100 * t + i}';
+    if (i.isOdd) {
+      log1.add(msg);
+    } else {
+      log2.add(msg);
+    }
+  }
+
+  print('Step 4: same object? ${identical(log1, log2)}');
+  print('Step 4: entries = ${log1.entries.length}');
+  print('Step 4: last = ${log2.entries.last}');
 }
 
 void step5() {
