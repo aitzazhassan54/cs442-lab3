@@ -142,6 +142,29 @@ List<OrderLine> buildReceipt() {
   return [for (var k = 0; k < 3; k++) OrderLine(items[k], 1 + (t + k) % 4)];
 }
 
+class Coupon {
+  static final Map<String, Coupon> _cache = {};
+
+  final String code;
+  final int percent;
+  final int minSpend;
+
+  Coupon(this.code, this.percent)
+    : minSpend = percent * 70,
+      assert(percent >= 1 && percent <= 50, 'percent must be 1 to 50');
+
+  factory Coupon.fromCode(String code) {
+    return _cache.putIfAbsent(code, () => Coupon(code, couponPercent));
+  }
+
+  int discountOn(int amount) {
+    if (amount >= minSpend) {
+      return amount * percent ~/ 100;
+    }
+    return 0;
+  }
+}
+
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -280,4 +303,20 @@ void step9() {
 
 void step10() {
   print('--- Step 10 ---');
+  var code = 'CAFE${seed.toString().padLeft(2, '0')}';
+  var c1 = Coupon.fromCode(code);
+  var c2 = Coupon.fromCode(code);
+
+  var receipt = 0;
+  for (var line in buildReceipt()) {
+    receipt += line.grand;
+  }
+
+  var discount = c1.discountOn(receipt);
+
+  print('Step 10: $code gives ${c1.percent}% off, min spend ${c1.minSpend}');
+  print('Step 10: cached? ${identical(c1, c2)}');
+  print(
+    'Step 10: receipt $receipt, discount $discount, payable ${receipt - discount}',
+  );
 }
