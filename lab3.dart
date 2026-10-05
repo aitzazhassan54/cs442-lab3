@@ -30,6 +30,17 @@ class Dish {
   late int price;
 }
 
+class MenuItem {
+  String name;
+  int price;
+
+  MenuItem(this.name, this.price) {
+    if (this.price < priceFloor) {
+      this.price = priceFloor;
+    }
+  }
+}
+
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -62,6 +73,11 @@ void step1() {
 
 void step2() {
   print('--- Step 2 ---');
+  var a = MenuItem(menu[u], priceOf(u));
+  var b = MenuItem('Test Special', 15 * u);
+
+  print('Step 2: ${a.name} Rs ${a.price}');
+  print('Step 2: Test Special Rs ${b.price}');
 }
 
 void step3() {
