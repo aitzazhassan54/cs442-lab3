@@ -90,6 +90,14 @@ class OrderLine {
     : total = item.price * qty,
       tax = (item.price * qty * taxPercent) ~/ 100,
       assert(qty > 0, 'qty must be positive');
+
+  //  line.grand = 5 fails because grand is a getter only, so it is
+  // read-only and there is no setter to handle an assignment. To make it
+  // legal I would have to add a setter: set grand(int v) { ... }
+
+  int get grand => total + tax;
+  bool get isBigOrder => grand > bigOrderLimit;
+  String get label => '${item.name} x$qty';
 }
 
 OrderLine mainOrder() {
@@ -184,6 +192,11 @@ void step5() {
 
 void step6() {
   print('--- Step 6 ---');
+  var line = mainOrder();
+
+  print('Step 6: grand=${line.grand}');
+  print('Step 6: big order? ${line.isBigOrder} (limit $bigOrderLimit)');
+  print('Step 6: label=${line.label}');
 }
 
 void step7() {
