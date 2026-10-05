@@ -26,19 +26,36 @@ final int couponPercent = 5 + t + u;
 
 // ===========================================================================
 class Dish {
+  // late promises Dart that name and price are assigned before they are read.
+  // Without it, a non-nullable field with no value does not compile.
   late String name;
   late int price;
+  // Self-check: item1 and item2 are separate objects, each with its own
+  // copy of name and price, so discounting item2 does not change item1.
 }
 
 class MenuItem {
+  //  price cannot be final because the constructor body
+  // reassigns it (raises it to priceFloor when it is too low),
+  // and a final field can only be assigned once.
   String name;
   int price;
+
+  // Think: the floor check is in the body of the main constructor only.
+  // MenuItem.free() is a separate constructor that sets price = 0 in its
+  // initializer list and never runs the main constructor's body, so the
+  // floor is never applied.
 
   MenuItem(this.name, this.price) {
     if (this.price < priceFloor) {
       this.price = priceFloor;
     }
   }
+  MenuItem.free(this.name) : price = 0;
+
+  MenuItem.fromString(String text)
+    : name = text.split(':')[0],
+      price = int.parse(text.split(':')[1]);
 }
 
 void main() {
@@ -82,6 +99,14 @@ void step2() {
 
 void step3() {
   print('--- Step 3 ---');
+  var freebie = MenuItem.free('Water');
+
+  var i = (u + 2) % 10;
+  var parsed = MenuItem.fromString('${menu[i]}:${priceOf(i)}');
+
+  print('Step 3: ${freebie.name} Rs ${freebie.price}');
+  print('Step 3: ${parsed.name} Rs ${parsed.price}');
+  print('Step 3: floor=$priceFloor, free price=${freebie.price}');
 }
 
 void step4() {
