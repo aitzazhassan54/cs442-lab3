@@ -137,6 +137,11 @@ List<MenuItem> buildMenu() {
   ];
 }
 
+List<OrderLine> buildReceipt() {
+  var items = buildMenu();
+  return [for (var k = 0; k < 3; k++) OrderLine(items[k], 1 + (t + k) % 4)];
+}
+
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -262,6 +267,15 @@ void step8() {
 
 void step9() {
   print('--- Step 9 ---');
+  var sum = 0;
+  for (var line in buildReceipt()) {
+    print('Step 9: ${line.label} = ${line.grand}');
+    OrderLog().add('receipt: ${line.label}');
+    sum += line.grand;
+  }
+
+  print('Step 9: receipt total = $sum');
+  print('Step 9: log size = ${OrderLog().entries.length}');
 }
 
 void step10() {
