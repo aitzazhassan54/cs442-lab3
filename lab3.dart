@@ -76,6 +76,26 @@ class OrderLog {
   void add(String msg) => entries.add(msg);
 }
 
+//  writing tax = total * taxPercent ~/ 100 gives an error because
+// the initializer list runs before the object exists, so fields like
+// total are not available yet. Only constructor parameters can be used,
+// so I recompute from item.price * qty instead.
+class OrderLine {
+  final MenuItem item;
+  final int qty;
+  final int total;
+  final int tax;
+
+  OrderLine(this.item, this.qty)
+    : total = item.price * qty,
+      tax = (item.price * qty * taxPercent) ~/ 100,
+      assert(qty > 0, 'qty must be positive');
+}
+
+OrderLine mainOrder() {
+  return OrderLine(MenuItem(menu[u], priceOf(u)), 2 + (t + u) % 5);
+}
+
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -148,6 +168,18 @@ void step4() {
 
 void step5() {
   print('--- Step 5 ---');
+
+  var line = mainOrder();
+
+  print('Step 5: ${line.item.name} x${line.qty}');
+  print('Step 5: total=${line.total} tax=${line.tax}');
+
+  try {
+    OrderLine(line.item, 0);
+    print('Step 5: assert did NOT fire');
+  } on AssertionError {
+    print('Step 5: assert fired');
+  }
 }
 
 void step6() {
