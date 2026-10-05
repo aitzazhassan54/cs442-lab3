@@ -51,6 +51,8 @@ class MenuItem {
       this.price = priceFloor;
     }
   }
+  @override
+  String toString() => '$name (Rs $price)';
   MenuItem.free(this.name) : price = 0;
 
   MenuItem.fromString(String text)
@@ -124,6 +126,15 @@ class StudentCard {
       _balance = v;
     }
   }
+}
+
+List<MenuItem> buildMenu() {
+  return [
+    for (var k = 0; k < 4; k++)
+      MenuItem.fromString(
+        '${menu[(u + 3 * k) % 10]}:${priceOf((u + 3 * k) % 10)}',
+      ),
+  ];
 }
 
 void main() {
@@ -240,6 +251,13 @@ void step7() {
 
 void step8() {
   print('--- Step 8 ---');
+  var items = buildMenu();
+  var priciest = items.reduce((a, b) => a.price >= b.price ? a : b);
+  var sum = items.fold(0, (s, e) => s + e.price);
+
+  print('Step 8: menu = $items');
+  print('Step 8: priciest = ${priciest.name}');
+  print('Step 8: sum = $sum');
 }
 
 void step9() {
